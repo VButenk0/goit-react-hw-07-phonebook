@@ -1,8 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { StyledForm, StyledInput, StyledButton } from './Form.styled';
 import { useState } from 'react';
-import { addContact } from '../../redux/contactsSlice';
-import { nanoid } from '@reduxjs/toolkit';
+import { addContactThunk } from '../../redux/operations';
 
 export const Form = () => {
   const dispatch = useDispatch();
@@ -22,17 +21,21 @@ export const Form = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    const id = nanoid();
-    if (contacts.some(contact => contact.name === name)) {
+
+    const newContactData = { name, number };
+
+    if (contacts.some(contact => contact.name === newContactData.name)) {
       setName('');
       setNumber('');
       return alert(`${name} is already in contacts.`);
-    } else if (contacts.some(contact => contact.number === number)) {
+    } else if (
+      contacts.some(contact => contact.number === newContactData.number)
+    ) {
       setName('');
       setNumber('');
       return alert(`This number (${number}) is already in contacts.`);
     }
-    dispatch(addContact({ id, name, number }));
+    dispatch(addContactThunk(newContactData));
     setName('');
     setNumber('');
   };
@@ -47,6 +50,8 @@ export const Form = () => {
         type="text"
         name="name"
         value={name}
+        placeholder="Type new contact full name"
+        pattern="^(\w\w+)\s(\w+)$"
         required
       />
       <br />
@@ -58,6 +63,8 @@ export const Form = () => {
         type="tel"
         name="number"
         value={number}
+        placeholder="Type new contact number (111-111-1111)"
+        pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
         required
       />
       <br />

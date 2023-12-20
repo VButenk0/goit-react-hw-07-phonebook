@@ -1,6 +1,4 @@
-import React from 'react';
-// import { nanoid } from 'nanoid';
-// import { Contact } from 'components/Contact/Contact';
+import React, { useEffect } from 'react';
 import {
   StyledButton,
   StyledList,
@@ -8,15 +6,17 @@ import {
   StyledText,
 } from './ContactsList.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact } from '../../redux/contactsSlice';
+import { deleteContactThunk, fetchContactsThunk } from '../../redux/operations';
 
 export const ContactsList = () => {
   const contacts = useSelector(state => state.contacts.contacts);
   const filter = useSelector(state => state.contacts.filter);
-  const state = useSelector(state => state);
-  console.log(state);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContactsThunk());
+  }, [dispatch]);
 
   const getFilteredData = () => {
     return contacts.filter(contact =>
@@ -33,7 +33,7 @@ export const ContactsList = () => {
           <StyledText>
             {name}: {number}
           </StyledText>
-          <StyledButton onClick={() => dispatch(deleteContact(id))}>
+          <StyledButton onClick={() => dispatch(deleteContactThunk(id))}>
             Delete
           </StyledButton>
         </StyledListItem>

@@ -1,31 +1,44 @@
 import { createSlice } from '@reduxjs/toolkit';
+import {
+  addContactThunk,
+  deleteContactThunk,
+  fetchContactsThunk,
+} from './operations';
 
 const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    contacts: [],
     filter: '',
+    loading: false,
+    error: '',
   },
   reducers: {
-    addContact: (state, action) => {
-      state.contacts.push(action.payload);
-    },
-    deleteContact: (state, action) => {
-      state.contacts = state.contacts.filter(
-        item => item.id !== action.payload
-      );
-    },
     changeFilter: (state, action) => {
       state.filter = action.payload;
     },
   },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchContactsThunk.fulfilled, (state, { payload }) => {
+        state.contacts = payload;
+        state.loading = false;
+      })
+      .addCase(deleteContactThunk.fulfilled, (state, { payload }) => {
+        state.contacts = state.contacts.filter(item => item.id !== payload.id);
+      })
+      .addCase(addContactThunk.fulfilled, (state, { payload }) => {
+        state.contacts.push(payload);
+      })
+      .addCase(fetchContactsThunk.pending, state => {
+        state.loading = true;
+      })
+      .addCase(fetchContactsThunk.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      });
+  },
 });
 
-export const { addContact, deleteContact, changeFilter } =
-  contactsSlice.actions;
+export const { changeFilter } = contactsSlice.actions;
 export const contactsReducer = contactsSlice.reducer;
