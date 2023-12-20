@@ -50,7 +50,7 @@ export const Form = () => {
         type="text"
         name="name"
         value={name}
-        placeholder="Type new contact full name"
+        placeholder="Type new contact full name (Name Surname)"
         pattern="^(\w\w+)\s(\w+)$"
         required
       />
